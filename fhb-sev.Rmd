@@ -3,12 +3,16 @@ title: "Meta-analysis of fungicide efficacy for FHB control in Brazil"
 output: github_document
 ---
 
+```{r}
+library(knitr)
+opts_chunk$set(tidy.opts=list(width.cutoff=80),tidy=TRUE)
+```
+
 ```{r, warning=FALSE, include=FALSE}
 
 # Load packages 
 library(tidyverse)
 library(metafor)
-library(knitr)
 library(ggthemes)
 library(cowplot)
 library(scales)

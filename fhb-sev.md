@@ -1,6 +1,11 @@
 Meta-analysis of fungicide efficacy for FHB control in Brazil
 ================
 
+``` r
+library(knitr)
+opts_chunk$set(tidy.opts=list(width.cutoff=80),tidy=TRUE)
+```
+
 Introduction
 ------------
 
@@ -9,7 +14,7 @@ Import data
 
 ``` r
 # import data
-fhb_sev <- read.csv("fhb_sev.csv", sep = ",", h =T)
+fhb_sev <- read.csv("fhb_sev.csv", sep = ",", h = T)
 ```
 
 Create MA variables
@@ -32,7 +37,8 @@ fhb_sev$vi <- fhb_sev$L.var_sev2
 ### Create the fungicide treatment variables
 
 ``` r
-# Check the number of entries by fungicide (AI: active ingredient) and number of sprays
+# Check the number of entries by fungicide (AI: active ingredient) and number of
+# sprays
 table(fhb_sev$AI, fhb_sev$n_spray2)
 ```
 
@@ -44,11 +50,9 @@ table(fhb_sev$AI, fhb_sev$n_spray2)
     ##   TEBU     0 23 22
 
 ``` r
-# create treatment variable (AI_nspray2) based on fungicide and number of sprays 
-fhb_sev <- fhb_sev %>% 
-  mutate(AI_nspray2 = paste(AI, n_spray2,sep='_')) %>% 
-  filter(AI_nspray2 != "CARB_1") %>% 
-  filter(trial, length(trial)>1) 
+# create treatment variable (AI_nspray2) based on fungicide and number of sprays
+fhb_sev <- fhb_sev %>% mutate(AI_nspray2 = paste(AI, n_spray2, sep = "_")) %>% filter(AI_nspray2 != 
+    "CARB_1") %>% filter(trial, length(trial) > 1)
 
 # four treatments were created with 22 to 35 entries each
 table(fhb_sev$AI_nspray2)
@@ -63,7 +67,7 @@ Calculate coefficient of variation of FHB index
 
 ``` r
 ## All entries
-cv <- (sd(fhb_sev$sev)/mean(fhb_sev$sev))*100
+cv <- (sd(fhb_sev$sev)/mean(fhb_sev$sev)) * 100
 cv
 ```
 
@@ -71,7 +75,7 @@ cv
 
 ``` r
 ## Only non-treated check
-cv <- (sd(fhb_sev$sev_check)/mean(fhb_sev$sev_check))*100
+cv <- (sd(fhb_sev$sev_check)/mean(fhb_sev$sev_check)) * 100
 cv
 ```
 
@@ -83,7 +87,8 @@ Network meta-analysis
 ### Mean log of FHB index
 
 ``` r
-fhb_mv_AI <- rma.mv(yi, vi, mods = ~ AI_nspray2, method="ML",random = list(~ AI_nspray2 | trial, ~1 | id), struct="UN", data=fhb_sev)
+fhb_mv_AI <- rma.mv(yi, vi, mods = ~AI_nspray2, method = "ML", random = list(~AI_nspray2 | 
+    trial, ~1 | id), struct = "UN", data = fhb_sev)
 ```
 
     ## Warning in rma.mv(yi, vi, mods = ~AI_nspray2, method = "ML", random =
@@ -92,10 +97,8 @@ fhb_mv_AI <- rma.mv(yi, vi, mods = ~ AI_nspray2, method="ML",random = list(~ AI_
 
 ``` r
 # Linear contrasts between pairs of treatments
-anova(fhb_mv_AI, L=rbind(c(0,1,-1,0,0), 
-                         c(0,0,-1,1,0),
-                         c(0,0,-1,0,1),
-                         c(0,0,0,-1,1)))  
+anova(fhb_mv_AI, L = rbind(c(0, 1, -1, 0, 0), c(0, 0, -1, 1, 0), c(0, 0, -1, 0, 1), 
+    c(0, 0, 0, -1, 1)))
 ```
 
     ## 
@@ -118,9 +121,8 @@ Control efficacy
 Bback-transforming difference of the logs
 
 ``` r
-results_AI <- data.frame(cbind((1-exp(fhb_mv_AI$b))*100, 
-                              (1-exp(fhb_mv_AI$ci.lb))*100,
-                              (1-exp(fhb_mv_AI$ci.ub))*100))
+results_AI <- data.frame(cbind((1 - exp(fhb_mv_AI$b)) * 100, (1 - exp(fhb_mv_AI$ci.lb)) * 
+    100, (1 - exp(fhb_mv_AI$ci.ub)) * 100))
 results_AI
 ```
 
@@ -141,7 +143,7 @@ Moderator variables
 
 ``` r
 # create the binary variable (dis_press)
-fhb_sev$dis_press <- ifelse(as.numeric(fhb_sev$sev_check) >7.0, 2, 1)
+fhb_sev$dis_press <- ifelse(as.numeric(fhb_sev$sev_check) > 7, 2, 1)
 
 # summarize number of trials per category of dis_press
 table(fhb_sev$AI_nspray2, fhb_sev$dis_press)
@@ -156,12 +158,13 @@ table(fhb_sev$AI_nspray2, fhb_sev$dis_press)
     ##   TEBU_2    10 12
 
 ``` r
-# Test effect of moderator 
-fhb_mv_AI_sev_check <- rma.mv(yi, vi, mods = ~ AI_nspray2*factor(dis_press), method="ML",random = list(~ AI_nspray2 | trial, ~1 | id), struct="UN", data=fhb_sev)
+# Test effect of moderator
+fhb_mv_AI_sev_check <- rma.mv(yi, vi, mods = ~AI_nspray2 * factor(dis_press), method = "ML", 
+    random = list(~AI_nspray2 | trial, ~1 | id), struct = "UN", data = fhb_sev)
 
 
 # Contrast levels of moderators
-anova(fhb_mv_AI_sev_check,btt=7:10)
+anova(fhb_mv_AI_sev_check, btt = 7:10)
 ```
 
     ## 
@@ -172,7 +175,7 @@ anova(fhb_mv_AI_sev_check,btt=7:10)
 
 ``` r
 # create binary variable (yield_class)
-summary(fhb_sev$yield_check) # Median = 2993; Mean = 2915
+summary(fhb_sev$yield_check)  # Median = 2993; Mean = 2915
 ```
 
     ##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
@@ -192,9 +195,10 @@ table(fhb_sev$yield_class, fhb_sev$AI_nspray2)
 
 ``` r
 # test the effect of moderator
-fhb_mv_AI_yield_class <- rma.mv(yi, vi, mods = ~ AI_nspray2*factor(yield_class), method="ML",random = list(~ AI_nspray2 | trial, ~1 | id), struct="UN", data=fhb_sev)
+fhb_mv_AI_yield_class <- rma.mv(yi, vi, mods = ~AI_nspray2 * factor(yield_class), 
+    method = "ML", random = list(~AI_nspray2 | trial, ~1 | id), struct = "UN", data = fhb_sev)
 
-anova(fhb_mv_AI_yield_class, btt=7:10) 
+anova(fhb_mv_AI_yield_class, btt = 7:10)
 ```
 
     ## 
@@ -204,8 +208,7 @@ anova(fhb_mv_AI_yield_class, btt=7:10)
 ### Year as continuous
 
 ``` r
-# Moderator year (continuous)
-# Number of entries by fungicide and year
+# Moderator year (continuous) Number of entries by fungicide and year
 table(fhb_sev$AI_nspray2, fhb_sev$year)
 ```
 
@@ -218,10 +221,11 @@ table(fhb_sev$AI_nspray2, fhb_sev$year)
     ##   TEBU_2       4    0    0    0    0   14    0    0    4
 
 ``` r
-fhb_mv_AI_year <- rma.mv(yi, vi, mods = ~ AI_nspray2*as.numeric(year), method="ML",random =list(~ AI_nspray2 | trial, ~1 | id), struct="UN", data=fhb_sev)
+fhb_mv_AI_year <- rma.mv(yi, vi, mods = ~AI_nspray2 * as.numeric(year), method = "ML", 
+    random = list(~AI_nspray2 | trial, ~1 | id), struct = "UN", data = fhb_sev)
 
 
-anova(fhb_mv_AI_year, btt=7:10)
+anova(fhb_mv_AI_year, btt = 7:10)
 ```
 
     ## 
@@ -234,14 +238,11 @@ Visualize the data
 ### Boxplot of severity by treatment
 
 ``` r
-ggplot(fhb_sev, aes(AI_nspray2, sev))+
-  geom_boxplot(size = 0.5, outlier.shape = NA)+ 
-  geom_jitter(width=0.1, shape=1, size=2.5, color="gray50")+
-  scale_x_discrete(labels=c("CHECK","CARB 2x", "PROP 2x" ,"TEBU 1x","TEBU 2x")) +
-  theme_classic()+
-  xlab("")+
-  ylab("FHB index (%)")+ 
-  scale_y_continuous(breaks=c(0, 10,  20,  30, 40, 50, 60, 70, 80, 90, 100), limits=c(0,100))
+ggplot(fhb_sev, aes(AI_nspray2, sev)) + geom_boxplot(size = 0.5, outlier.shape = NA) + 
+    geom_jitter(width = 0.1, shape = 1, size = 2.5, color = "gray50") + scale_x_discrete(labels = c("CHECK", 
+    "CARB 2x", "PROP 2x", "TEBU 1x", "TEBU 2x")) + theme_classic() + xlab("") + ylab("FHB index (%)") + 
+    scale_y_continuous(breaks = c(0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100), limits = c(0, 
+        100))
 ```
 
-![](fhb-sev_files/figure-markdown_github/unnamed-chunk-13-1.png)
+![](fhb-sev_files/figure-markdown_github/unnamed-chunk-14-1.png)
