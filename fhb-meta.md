@@ -107,141 +107,11 @@ length(unique(fhb_yield$trial))
     ## [1] 48
 
 ``` r
-# Number of unique study
+# Number of unique studies
 length(unique(fhb_yield$study))
 ```
 
     ## [1] 15
-
-``` r
-# Summary for Check
-fhb_check <- fhb_yield %>% 
-  group_by(trial) %>% 
-  filter (AI_nspray2 == "AACHECK_0")
-
-summary(fhb_check$yield_check)
-```
-
-    ##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
-    ##   67.33 2647.00 3141.00 3132.00 4005.00 5114.00
-
-``` r
-# D
-summary(fhb_yield$D)
-```
-
-    ##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
-    ##  -192.0     0.0   227.0   384.1   658.2  1550.0
-
-``` r
-table(fhb_check$trial)
-```
-
-    ## 
-    ##  1  2  3  4  5  6 11 16 19 20 21 22 23 24 25 32 33 34 35 36 37 38 39 40 41 
-    ##  1  1  1  1  1  1  1  1  1  1  1  1  1  1  1  1  1  1  1  1  1  1  1  1  1 
-    ## 42 43 44 45 46 47 48 49 53 54 55 57 61 66 83 84 85 86 87 88 89 90 91 
-    ##  1  1  1  1  1  1  1  1  1  1  1  1  1  1  1  1  1  1  1  1  1  1  1
-
-``` r
-### CV for yield
-
-fhb_check$cv <- ((sqrt(fhb_check$V_yield)/fhb_check$mean_yield)*100)
-summary(fhb_check$cv)
-```
-
-    ##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
-    ##   2.800   6.544   6.964   8.557  10.120  30.850
-
-``` r
-## All entries
-cv <- (sd(fhb_yield$yield)/mean(fhb_yield$yield))*100
-cv
-```
-
-    ## [1] 34.62744
-
-``` r
-## For control
-cv <- (sd(fhb_check$yield)/mean(fhb_check$yield))*100
-cv
-```
-
-    ## [1] 37.65389
-
-``` r
-# Summary for AI_nspray2 
-fhb_check <- fhb_yield %>% 
-  group_by(trial) %>% 
-  filter (AI_nspray2 == "AACHECK_0")
-nrow(data.frame(table(fhb_check$trial)))
-```
-
-    ## [1] 48
-
-``` r
-fhb_carb <- fhb_yield %>% 
-  group_by(trial) %>% 
-  filter (AI_nspray2 == "CARB_2")
-summary(fhb_carb$yield) 
-```
-
-    ##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
-    ##     825    3093    3870    3805    4245    5953
-
-``` r
-nrow(data.frame(table(fhb_carb$trial)))
-```
-
-    ## [1] 33
-
-``` r
-fhb_prop <- fhb_yield %>% 
-  group_by(trial) %>% 
-  filter (AI_nspray2 == "PROP_2")
-summary(fhb_prop$yield)
-```
-
-    ##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
-    ##   177.4  2684.0  3370.0  3159.0  4062.0  5352.0
-
-``` r
-nrow(data.frame(table(fhb_prop$trial)))
-```
-
-    ## [1] 26
-
-``` r
-fhb_teb1 <- fhb_yield %>% 
-  group_by(trial) %>% 
-  filter (AI_nspray2 == "TEBU_1")
-summary(fhb_teb1$yield)
-```
-
-    ##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
-    ##     710    3484    3932    3846    5022    5638
-
-``` r
-nrow(data.frame(table(fhb_teb1$trial)))
-```
-
-    ## [1] 22
-
-``` r
-fhb_teb2 <- fhb_yield %>% 
-  group_by(trial) %>% 
-  filter (AI_nspray2 == "TEBU_2")
-summary(fhb_teb2$yield)
-```
-
-    ##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
-    ##    1723    3318    3924    4019    5076    5717
-
-``` r
-nrow(data.frame(table(fhb_teb2$trial)))
-```
-
-    ## [1] 25
 
 ``` r
 # Number of trial by year
@@ -264,23 +134,6 @@ kable(data.frame(table(fhb_trial$year)), format="pandoc")
 | 2012 |     6|
 | 2013 |    17|
 | 2014 |     9|
-
-``` r
-kable(data.frame(prop.table(table(fhb_trial$year))), format="pandoc")
-```
-
-| Var1 |       Freq|
-|:-----|----------:|
-| 2000 |  0.0833333|
-| 2004 |  0.0208333|
-| 2005 |  0.0208333|
-| 2007 |  0.0208333|
-| 2009 |  0.0208333|
-| 2010 |  0.0208333|
-| 2011 |  0.1458333|
-| 2012 |  0.1250000|
-| 2013 |  0.3541667|
-| 2014 |  0.1875000|
 
 ``` r
 nrow(table(fhb_trial$year))
@@ -313,29 +166,6 @@ kable(data.frame(table(fhb_trial$location)), format="pandoc")
 | Toledo              |     1|
 
 ``` r
-kable(data.frame(prop.table(table(fhb_trial$location))), format="pandoc")
-```
-
-| Var1                |       Freq|
-|:--------------------|----------:|
-| Agua Santa          |  0.0208333|
-| Capao Bonito do Sul |  0.0416667|
-| Castro              |  0.0208333|
-| Condor              |  0.0208333|
-| Coxilha             |  0.2500000|
-| Cruz Alta           |  0.1250000|
-| Girua               |  0.0416667|
-| Guarapuava          |  0.1041667|
-| Itapiranga          |  0.0208333|
-| Lages               |  0.0416667|
-| Londrina            |  0.0208333|
-| Muitos Capoes       |  0.0208333|
-| Passo Fundo         |  0.1666667|
-| Ponta Grossa        |  0.0625000|
-| Ponta Grossa        |  0.0208333|
-| Toledo              |  0.0208333|
-
-``` r
 nrow(table(fhb_trial$location))#Ponta Grossa repete (??)
 ```
 
@@ -353,16 +183,6 @@ kable(data.frame(table(fhb_trial$publication)), format="pandoc")
 | Resumo  |    17|
 
 ``` r
-kable(data.frame(prop.table(table(fhb_trial$publication))), format="pandoc")
-```
-
-| Var1    |       Freq|
-|:--------|----------:|
-| Artigo  |  0.1458333|
-| Boletim |  0.5000000|
-| Resumo  |  0.3541667|
-
-``` r
 # Number of trial by state
 kable(data.frame(table(fhb_trial$state)), format="pandoc")
 ```
@@ -372,37 +192,6 @@ kable(data.frame(table(fhb_trial$state)), format="pandoc")
 | PR   |    11|
 | RS   |    34|
 | SC   |     3|
-
-``` r
-kable(data.frame(prop.table(table(fhb_trial$state))), format="pandoc")
-```
-
-| Var1 |       Freq|
-|:-----|----------:|
-| PR   |  0.2291667|
-| RS   |  0.7083333|
-| SC   |  0.0625000|
-
-``` r
-# Number of trial by state
-kable(data.frame(table(fhb_trial$state)), format="pandoc")
-```
-
-| Var1 |  Freq|
-|:-----|-----:|
-| PR   |    11|
-| RS   |    34|
-| SC   |     3|
-
-``` r
-kable(data.frame(prop.table(table(fhb_trial$state))), format="pandoc")
-```
-
-| Var1 |       Freq|
-|:-----|----------:|
-| PR   |  0.2291667|
-| RS   |  0.7083333|
-| SC   |  0.0625000|
 
 ``` r
 # entries with D value lower than zero
@@ -410,10 +199,11 @@ negat_D <- fhb_yield %>%
   filter(D < 0)
 ```
 
-Calculate coefficient of variation of FHB index
------------------------------------------------
+Calculate coefficient of variation of FHB index and yield
+---------------------------------------------------------
 
 ``` r
+# CV for FHB index
 ## All entries
 cv <- (sd(fhb_sev$sev)/mean(fhb_sev$sev))*100
 cv
@@ -428,6 +218,24 @@ cv
 ```
 
     ## [1] 122.4901
+
+``` r
+### CV for yield
+
+## All entries
+cv <- (sd(fhb_yield$yield)/mean(fhb_yield$yield))*100
+cv
+```
+
+    ## [1] 34.62744
+
+``` r
+## For control
+cv <- (sd(fhb_yield$yield_check)/mean(fhb_yield$yield_check))*100
+cv
+```
+
+    ## [1] 34.42881
 
 Network meta-analysis
 ---------------------
@@ -910,7 +718,7 @@ ggplot(fhb_sev, aes(AI_nspray2, sev))+
   scale_y_continuous(breaks=c(0, 10,  20,  30, 40, 50, 60, 70, 80, 90, 100), limits=c(0,100))
 ```
 
-![](fhb-sev_files/figure-markdown_github/unnamed-chunk-18-1.png)
+![](fhb-meta_files/figure-markdown_github/unnamed-chunk-18-1.png)
 
 ### Boxplot yield
 
@@ -924,7 +732,7 @@ ggplot(fhb_yield, aes(AI_nspray2, yield))+
   scale_y_continuous(breaks=c(0, 1000,  2000, 3000, 4000, 5000, 6000))
 ```
 
-![](fhb-sev_files/figure-markdown_github/unnamed-chunk-19-1.png)
+![](fhb-meta_files/figure-markdown_github/unnamed-chunk-19-1.png)
 
 ### Plot D
 
@@ -1015,4 +823,4 @@ combo2 <- plot_grid(plot_D_tebu, plot_D_tebu2,labels=c('', ''),  ncol = 2)
 plot_grid(combo1, combo2,labels=c('', ''),  ncol = 1)
 ```
 
-![](fhb-sev_files/figure-markdown_github/unnamed-chunk-20-1.png)
+![](fhb-meta_files/figure-markdown_github/unnamed-chunk-20-1.png)

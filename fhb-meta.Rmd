@@ -1,0 +1,502 @@
+---
+title: "Meta-analysis of fungicide efficacy for FHB control in Brazil"
+output: github_document
+---
+
+
+
+```{r, warning=FALSE, include=FALSE}
+
+# Load packages 
+library(tidyverse)
+library(metafor)
+library(ggthemes)
+library(cowplot)
+library(scales)
+library(knitr)
+library(nloptr)
+library(minqa)
+```
+
+
+## Introduction
+
+
+## Import data
+
+```{r}
+
+# import data
+
+# FHB index data
+fhb_sev <- read.csv("fhb_sev.csv", sep = ",", h = T)
+
+# Yield data
+fhb_yield <- read.csv("fhb_yield.csv", sep = ",", h = T)
+```
+
+
+## Prepare variables for meta-analysis
+
+
+### Effect size 
+
+```{r}
+
+# log of FHB index
+fhb_sev$yi <- log(fhb_sev$sev)
+
+# log of yield
+fhb_yield$yi <- log(fhb_yield$yield)
+
+# difference in yield between treatment and non-treated check
+fhb_yield$D <-fhb_yield$yield - fhb_yield$yield_check
+
+# yield and 
+fhb_yield$yi2 <- fhb_yield$yield
+
+
+```
+
+
+
+
+### Sampling variance 
+
+```{r}
+
+# Sampling variance for the log of FHB index
+fhb_sev$vi <- with(fhb_sev, V_sev / (n * sev^2))
+
+# Sampling variance for the log of yield
+fhb_yield$vi <- with(fhb_yield, V_yield / (n * yield^2))
+
+# Sampling variance for yield
+fhb_yield$vi2 <- fhb_yield$V_yield/fhb_yield$n # multivariate approach
+
+```
+
+### Create treatment variables 
+
+```{r}
+# Check the number of entries by fungicide (AI: active ingredient) and number of sprays
+table(fhb_sev$AI, fhb_sev$n_spray2)
+
+# Create treatment variable based on fungicide name and number of sprays 
+fhb_sev <- fhb_sev %>% 
+  mutate(AI_nspray2 = paste(AI, n_spray2,sep='_')) %>% 
+  filter(AI_nspray2 != "CARB_1") %>% 
+  filter(trial, length(trial)>1) 
+
+fhb_yield <- fhb_yield %>% 
+  mutate(AI_nspray2 = paste(AI, n_spray2,sep='_')) %>% 
+  filter(AI_nspray2 != "CARB_1") %>% 
+  filter(trial, length(trial)>1) 
+
+
+```
+
+## ID variable for each entry within a trial
+
+```{r}
+fhb_sev$id <- 1:nrow(fhb_sev)
+fhb_yield$id <- 1:nrow(fhb_yield)
+```
+
+## Descriptive analysis for yield
+
+```{r}
+# Number of entries by fungicide and number of sprays
+kable(table(fhb_yield$AI, fhb_yield$n_spray2), format="pandoc")
+
+# Number of unique trials
+length(unique(fhb_yield$trial))
+
+# Number of unique studies
+length(unique(fhb_yield$study))
+
+# Number of trial by year
+fhb_trial <- fhb_yield %>% 
+  group_by(trial) %>% 
+  filter(row_number() ==1)
+
+kable(data.frame(table(fhb_trial$year)), format="pandoc")
+
+nrow(table(fhb_trial$year))
+
+# Number of trial by location
+kable(data.frame(table(fhb_trial$location)), format="pandoc")
+
+nrow(table(fhb_trial$location))#Ponta Grossa repete (??)
+
+# Number of trial by publication
+kable(data.frame(table(fhb_trial$publication)), format="pandoc")
+
+# Number of trial by state
+kable(data.frame(table(fhb_trial$state)), format="pandoc")
+
+# entries with D value lower than zero
+negat_D <- fhb_yield %>% 
+  filter(D < 0)
+
+
+
+```
+
+
+
+## Calculate coefficient of variation of FHB index and yield
+
+```{r}
+# CV for FHB index
+## All entries
+cv <- (sd(fhb_sev$sev)/mean(fhb_sev$sev))*100
+cv
+
+## Only non-treated check
+cv <- (sd(fhb_sev$sev_check)/mean(fhb_sev$sev_check))*100
+cv
+
+### CV for yield
+
+## All entries
+cv <- (sd(fhb_yield$yield)/mean(fhb_yield$yield))*100
+cv
+
+## For control
+cv <- (sd(fhb_yield$yield_check)/mean(fhb_yield$yield_check))*100
+cv
+```
+
+
+## Network meta-analysis
+
+### Mean log of FHB index
+
+```{r, message=FALSE, warning=FALSE}
+fhb_mv_AI <- rma.mv(yi, vi, 
+                    mods = ~ AI_nspray2, 
+                    method="ML",
+                    random = list(~ AI_nspray2 | trial, ~1 | id), 
+                    struct="UN", data=fhb_sev)
+
+# Linear contrasts between pairs of treatments
+anova(fhb_mv_AI, L=rbind(c(0,1,-1,0,0), 
+                         c(0,0,-1,1,0),
+                         c(0,0,-1,0,1),
+                         c(0,0,0,-1,1)))  
+
+
+```
+
+## Control efficacy
+
+Back-transform (exponential) the difference of the logs to obtain the response ratio and further calculate the percent reduction in FHB index relative to the check treatment (control efficacy) for each fungicide.
+
+```{r}
+results_AI <- data.frame(cbind((1-exp(fhb_mv_AI$b))*100, 
+                              (1-exp(fhb_mv_AI$ci.lb))*100,
+                              (1-exp(fhb_mv_AI$ci.ub))*100))
+results_AI
+```
+
+
+## Inconsistency test
+
+```{r, eval=FALSE, message=FALSE, warning=FALSE, include=FALSE}
+ 
+### Number of trials per design (cons_group)
+table(fhb_sev$cons_group)
+
+
+### Model testing interaction treat x design
+fhb_mv_AI_cons <- rma.mv(yi, vi, 
+                         mods = ~ AI_nspray2 * cons_group, 
+                         method="ML",
+                         random = ~ AI_nspray2 | trial/cons_group, 
+                         struct="UN", 
+                         data=fhb_sev)
+
+summary(fhb_mv_AI_cons)
+
+results_I<- data.frame(cbind((exp(fhb_mv_AI$b)-1)*100, 
+                             (exp(fhb_mv_AI$ci.lb)-1)*100,
+                             (exp(fhb_mv_AI$ci.ub)-1)*100))
+
+results_I
+anova(fhb_mv_AI_cons, btt=11:20) #p-val = 0.9999
+
+
+```
+
+ 
+
+## Moderator variables
+
+
+### FHB index base
+
+
+```{r, message=FALSE, warning=FALSE}
+# create the binary variable (dis_press)
+fhb_sev$dis_press <- ifelse(as.numeric(fhb_sev$sev_check) >7.0, 2, 1)
+
+# summarize number of trials per category of dis_press
+table(fhb_sev$AI_nspray2, fhb_sev$dis_press)
+
+# Test effect of moderator 
+fhb_mv_AI_sev_check <- rma.mv(yi, vi, 
+                              mods = ~ AI_nspray2*factor(dis_press),
+                              method="ML",
+                              random = list(~ AI_nspray2 | trial, ~1 | id),
+                              struct="UN", 
+                              data=fhb_sev)
+
+
+# Contrast levels of moderators
+anova(fhb_mv_AI_sev_check,btt=7:10)
+
+
+```
+
+### Yield base
+
+```{r, message=FALSE, warning=FALSE}
+# create binary variable (yield_class)
+summary(fhb_sev$yield_check) # Median = 2993; Mean = 2915
+fhb_sev$yield_class <- ifelse(fhb_sev$yield_check > 3000, 2, 1)
+
+# check number of trials per yield_class category
+table(fhb_sev$yield_class, fhb_sev$AI_nspray2)
+
+# test the effect of moderator
+fhb_mv_AI_yield_class <- rma.mv(yi, vi, 
+                                mods = ~ AI_nspray2*factor(yield_class),
+                                method="ML",
+                                random = list(~ AI_nspray2 | trial, ~1 | id), 
+                                struct="UN", 
+                                data=fhb_sev)
+
+anova(fhb_mv_AI_yield_class, btt=7:10) 
+
+```
+
+
+### Year as continuous 
+
+```{r, message=FALSE, warning=FALSE}
+# Moderator year (continuous)
+# Number of entries by fungicide and year
+table(fhb_sev$AI_nspray2, fhb_sev$year)
+
+fhb_mv_AI_year <- rma.mv(yi, vi, 
+                         mods = ~ AI_nspray2*as.numeric(year), 
+                         method="ML",
+                         random =list(~ AI_nspray2 | trial, ~1 | id),
+                         struct="UN", 
+                         data=fhb_sev)
+
+
+anova(fhb_mv_AI_year, btt=7:10)
+
+```
+
+
+### Overall percent yield increase by treament
+
+```{r}
+### AI_nspray2 (AI and number of sprays)
+
+fhb_mv_AI <- rma.mv(yi, vi, 
+                    mods = ~ AI_nspray2, 
+                    method="ML",random = list(~ AI_nspray2 | trial, ~1 | id), 
+                    struct="UN", data=fhb_yield)
+
+summary(fhb_mv_AI)
+
+results_I<- data.frame(cbind((exp(fhb_mv_AI$b)-1)*100, 
+                             (exp(fhb_mv_AI$ci.lb)-1)*100,
+                             (exp(fhb_mv_AI$ci.ub)-1)*100))
+
+results_I
+
+# Linear contrasts between treatments
+
+anova(fhb_mv_AI, L=rbind(c(0,1,-1,0,0), 
+                         c(0,0,1,-1,0),
+                         c(0,0,1,0,-1),
+                         c(0,0,0,-1,1))) 
+
+
+```
+
+### Overall absolute yield increase 
+
+```{r}
+### by fungicide treatment
+
+fhb_mv_AI_D <- rma.mv(yi2, vi2,
+                      mods = ~ AI_nspray2, 
+                      method="ML",random = list(~ AI_nspray2 | trial, ~1 | id),                       struct="UN", 
+                      data=fhb_yield, 
+                      control = list(optimizer="nlm"))
+summary(fhb_mv_AI_D)
+
+
+# Linear contrasts between treatments
+
+anova(fhb_mv_AI_D, L=rbind(c(0,1,-1,0,0), 
+                         c(0,0,1,-1,0),
+                         c(0,0,1,0,-1),
+                         c(0,0,0,-1,1)))
+```
+
+
+### Inconsistency test for yield data
+```{r}
+
+### Groups were inclued directly in the spreadsheet
+table(fhb_yield$cons_group)
+
+
+### Model 
+fhb_mv_AI_cons <- rma.mv(yi2, vi2, 
+                         mods = ~ AI_nspray2 * cons_group, 
+                         method="ML",
+                         random = ~ AI_nspray2 | trial/cons_group, 
+                         struct="UN", data=fhb_yield)
+
+summary(fhb_mv_AI_cons)
+
+results_I<- data.frame(cbind((exp(fhb_mv_AI$b)-1)*100, 
+                             (exp(fhb_mv_AI$ci.lb)-1)*100,
+                             (exp(fhb_mv_AI$ci.ub)-1)*100))
+results_I
+
+#anova(fhb_mv_AI_cons, btt=14:26) 
+
+```
+
+
+## Visualize the data
+
+###Boxplot of severity by treatment
+
+```{r}
+ggplot(fhb_sev, aes(AI_nspray2, sev))+
+  geom_boxplot(size = 0.5, outlier.shape = NA)+ 
+  geom_jitter(width=0.1, shape=1, size=2.5, color="gray50")+
+  scale_x_discrete(labels=c("CHECK","CARB 2x", "PROP 2x" ,"TEBU 1x","TEBU 2x")) +
+  theme_classic()+
+  xlab("")+
+  ylab("FHB index (%)")+ 
+  scale_y_continuous(breaks=c(0, 10,  20,  30, 40, 50, 60, 70, 80, 90, 100), limits=c(0,100))
+  
+```
+
+
+### Boxplot yield 
+
+```{r}
+
+ggplot(fhb_yield, aes(AI_nspray2, yield))+
+  geom_boxplot(size = 0.5, outlier.shape = NA)+ geom_jitter(width=0.1, shape=1, size=2.5, color="gray50")+
+  scale_x_discrete(labels=c("CHECK","CARB 2x", "PROP 2x" ,"TEBU 1x","TEBU 2x")) +
+  theme_cowplot()+
+  xlab("")+
+  ylab("Yield (kg/ha)")+
+  scale_y_continuous(breaks=c(0, 1000,  2000, 3000, 4000, 5000, 6000))
+
+```
+
+
+### Plot D
+
+```{r, echo=TRUE, message=FALSE, warning=FALSE}
+library(plyr)
+fhb_yield$se <- sqrt(fhb_yield$vi2/sqrt(fhb_yield$n))
+
+sum<-ddply(.data=fhb_yield, 
+               .(AI_nspray2), 
+               summarize, 
+               n=paste("n =", length(AI_nspray2)))
+sum1<-sum %>% filter(AI_nspray2 != "AACHECK_0", AI_nspray2!="PROP_2",AI_nspray2 !="TEBU_1",AI_nspray2 !="TEBU_2")
+
+
+##### CARB ########
+
+plot_D_carb <- fhb_yield %>% group_by(trial) %>% filter(AI_nspray2 != "AACHECK_0", AI_nspray2!="PROP_2",AI_nspray2 !="TEBU_1",AI_nspray2 !="TEBU_2") %>% 
+  ggplot(., aes(reorder(treatment, D), D)) +
+  geom_bar(stat="identity")+
+  geom_errorbar(width=0.5, size= 0.3, aes(ymax = D + se, ymin=D - se))+
+  geom_text(data=sum1, aes(x=5, y=1200,label=n), inherit.aes=FALSE, parse=FALSE)+
+  geom_text(aes(x=5, y=1400,label="CARB 2x"), inherit.aes=FALSE, parse=FALSE)+
+  geom_hline(aes(yintercept=0), size = 0.1)+
+  scale_y_continuous(breaks=c(-250,0, 250,  500, 750, 1000, 1250, 1500))+
+  ylab("D (kg/ha)")+ xlab("Study treatments (sorted) ") +
+  theme(axis.text = element_text(size=11),
+        #axis.title.x=element_blank(), 
+        #axis.ticks.x=element_blank(),
+        axis.text.x=element_blank(),
+        legend.position="none")
+
+######PROP######
+
+sum2<-sum %>% filter(AI_nspray2 != "AACHECK_0", AI_nspray2!="CARB_2",AI_nspray2 !="TEBU_1",AI_nspray2 !="TEBU_2")
+
+plot_D_prop <- fhb_yield %>% group_by(trial) %>% filter (AI_nspray2 != "AACHECK_0", AI_nspray2!="CARB_2",AI_nspray2 !="TEBU_1",AI_nspray2 !="TEBU_2") %>% 
+  ggplot(., aes(reorder(treatment, D), D)) +
+  geom_bar(stat="identity")+
+  geom_errorbar(width=0.5, size= 0.3, aes(ymax = D + se, ymin=D - se))+
+  geom_text(data=sum2, aes(x=4, y=1200,label=n), inherit.aes=FALSE, parse=FALSE)+
+  geom_text(aes(x=4, y=1400,label="PROP 2x"), inherit.aes=FALSE, parse=FALSE)+
+  geom_hline(aes(yintercept=0), size = 0.1)+
+  scale_y_continuous(breaks=c(-250,0, 250,  500, 750, 1000, 1250, 1500))+
+  ylab(" ")+ xlab("Study treatments (sorted) ") +
+  theme(axis.text = element_text(size=11),
+        axis.text.x=element_blank(),
+        legend.position="none")
+
+
+##### TEBU########
+
+sum3<-sum %>% filter(AI_nspray2 != "AACHECK_0", AI_nspray2!="CARB_2",AI_nspray2 !="PROP_2",AI_nspray2 !="TEBU_2")
+
+plot_D_tebu <- fhb_yield %>% group_by(trial) %>% filter (AI_nspray2 != "AACHECK_0", AI_nspray2!="CARB_2",AI_nspray2 !="PROP_2",AI_nspray2 !="TEBU_2") %>% 
+  ggplot(., aes(reorder(treatment, D), D)) +
+  geom_bar(stat="identity")+
+ geom_errorbar(width=0.5, size= 0.3, aes(ymax = D + se, ymin=D - se))+
+  geom_text(data=sum3, aes(x=5, y=1300,label=n), inherit.aes=FALSE, parse=FALSE)+
+  geom_text(aes(x=5, y=1500,label="TEBU 1x"), inherit.aes=FALSE, parse=FALSE)+
+  geom_hline(aes(yintercept=0), size = 0.1)+
+  scale_y_continuous(breaks=c(-250,0, 250,  500, 750, 1000, 1250, 1500))+
+  ylab("D (kg/ha)")+ xlab("Study treatments (sorted) ") +
+  labs(fill="Number of sprays" )+
+    theme(axis.text = element_text(size=11),
+        axis.text.x=element_blank(),
+        legend.position="top") 
+
+sum4<-sum %>% filter(AI_nspray2 != "AACHECK_0", AI_nspray2!="CARB_2",AI_nspray2 !="PROP_2",AI_nspray2 !="TEBU_1")
+
+plot_D_tebu2 <- fhb_yield %>% group_by(trial) %>% filter (AI_nspray2 != "AACHECK_0", AI_nspray2!="CARB_2",AI_nspray2 !="PROP_2",AI_nspray2 !="TEBU_1") %>% 
+  ggplot(., aes(reorder(treatment, D), D)) +
+  geom_bar(stat="identity")+
+  geom_errorbar(width=0.5, size= 0.3, aes(ymax = D + se, ymin=D - se))+
+  geom_text(data=sum4, aes(x=5, y=1200,label=n), inherit.aes=FALSE, parse=FALSE)+
+  geom_text(aes(x=5, y=1400,label="TEBU 2x"), inherit.aes=FALSE, parse=FALSE)+
+  geom_hline(aes(yintercept=0), size = 0.1)+
+  scale_y_continuous(breaks=c(-250,0, 250,  500, 750, 1000, 1250, 1500))+
+  ylab(" ")+ xlab("Study treatments (sorted) ") +
+  labs(fill="Number of sprays" )+
+    theme(axis.text = element_text(size=11),
+        axis.text.x=element_blank(),
+        legend.position="top") 
+
+combo1 <- plot_grid(plot_D_carb, plot_D_prop,labels=c('', ''),  ncol = 2)
+
+combo2 <- plot_grid(plot_D_tebu, plot_D_tebu2,labels=c('', ''),  ncol = 2)
+
+plot_grid(combo1, combo2,labels=c('', ''),  ncol = 1)
+
+
+```
