@@ -1,4 +1,4 @@
-Meta-analysis of fungicide efficacy for FHB control in Brazil
+Netwwork meta-analysis of the effect of fungicides for FHB control in Brazil
 ================
 
 Introduction
@@ -6,6 +6,8 @@ Introduction
 
 Import data
 -----------
+
+The data are stored in two csv files, one for FHB index and the other for yield. Each file contains only the selected treatments following a systematic review. See this table which contains the selected trials with summary information for the trial and the reference.
 
 ``` r
 # import data
@@ -20,7 +22,13 @@ fhb_yield <- read.csv("fhb_yield.csv", sep = ",", h = T)
 Prepare variables for meta-analysis
 -----------------------------------
 
-### Effect size
+We conducted a two-stage multi-treatment or network meta-analysis for the simultaneous analysis of all treatments of interest and which co-occur in the same trial. This approach allows direct comparisons of treatments with each other, and takes into account all the correlations (see Madden et al. 2016 for more details).
+
+The most common form of effect size used in traditional meta-analysis are based on the contrasts of the treatment of interest with a common reference (e.g. control treatment), such as mean difference, response ratio, etc. This is known as the conditional modeling approach, also named contrast-based meta-analysis. An alternative and simpler approach, which is commonly used in plant pathology, is to fit a two-way linear mixed model directly to the treatment means. This is know as the uncondional modeling approach or arm-based meta-analysis.
+
+Here, we used the latter approach fitted directly to the log of the means (for both FHB index and yield) for further obtaining the relative effect (control efficacy and yield response). For yield, we fitted the model directly to the mean yield of treatments to further estimate the yield response, or the difference (D) from using the fungicides. The D was calculated for each treatment within a study for plotting purposes, but the meta-analyitic estimate of D was obtained from the difference of the estimates by mixed model fitted directly to the treatment means.
+
+### Effect size calculations
 
 ``` r
 # log of FHB index
@@ -29,11 +37,8 @@ fhb_sev$yi <- log(fhb_sev$sev)
 # log of yield
 fhb_yield$yi <- log(fhb_yield$yield)
 
-# difference in yield between treatment and non-treated check
+# difference (D) in yield between treatment and non-treated check
 fhb_yield$D <-fhb_yield$yield - fhb_yield$yield_check
-
-# yield and 
-fhb_yield$yi2 <- fhb_yield$yield
 ```
 
 ### Sampling variance
@@ -49,7 +54,7 @@ fhb_yield$vi <- with(fhb_yield, V_yield / (n * yield^2))
 fhb_yield$vi2 <- fhb_yield$V_yield/fhb_yield$n # multivariate approach
 ```
 
-### Create treatment variables
+### Prepare the treatment variables
 
 ``` r
 # Check the number of entries by fungicide (AI: active ingredient) and number of sprays
@@ -89,15 +94,15 @@ Descriptive analysis for yield
 
 ``` r
 # Number of entries by fungicide and number of sprays
-kable(table(fhb_yield$AI, fhb_yield$n_spray2), format="pandoc")
+table(fhb_yield$AI, fhb_yield$n_spray2)
 ```
 
-|         |    0|    1|    2|
-|---------|----:|----:|----:|
-| AACHECK |   48|    0|    0|
-| CARB    |    0|    0|   41|
-| PROP    |    0|    0|   27|
-| TEBU    |    0|   38|   34|
+    ##          
+    ##            0  1  2
+    ##   AACHECK 48  0  0
+    ##   CARB     0  0 41
+    ##   PROP     0  0 27
+    ##   TEBU     0 38 34
 
 ``` r
 # Number of unique trials
@@ -119,21 +124,20 @@ fhb_trial <- fhb_yield %>%
   group_by(trial) %>% 
   filter(row_number() ==1)
 
-kable(data.frame(table(fhb_trial$year)), format="pandoc")
+data.frame(table(fhb_trial$year))
 ```
 
-| Var1 |  Freq|
-|:-----|-----:|
-| 2000 |     4|
-| 2004 |     1|
-| 2005 |     1|
-| 2007 |     1|
-| 2009 |     1|
-| 2010 |     1|
-| 2011 |     7|
-| 2012 |     6|
-| 2013 |    17|
-| 2014 |     9|
+    ##    Var1 Freq
+    ## 1  2000    4
+    ## 2  2004    1
+    ## 3  2005    1
+    ## 4  2007    1
+    ## 5  2009    1
+    ## 6  2010    1
+    ## 7  2011    7
+    ## 8  2012    6
+    ## 9  2013   17
+    ## 10 2014    9
 
 ``` r
 nrow(table(fhb_trial$year))
@@ -143,27 +147,26 @@ nrow(table(fhb_trial$year))
 
 ``` r
 # Number of trial by location
-kable(data.frame(table(fhb_trial$location)), format="pandoc")
+data.frame(table(fhb_trial$location))
 ```
 
-| Var1                |  Freq|
-|:--------------------|-----:|
-| Agua Santa          |     1|
-| Capao Bonito do Sul |     2|
-| Castro              |     1|
-| Condor              |     1|
-| Coxilha             |    12|
-| Cruz Alta           |     6|
-| Girua               |     2|
-| Guarapuava          |     5|
-| Itapiranga          |     1|
-| Lages               |     2|
-| Londrina            |     1|
-| Muitos Capoes       |     1|
-| Passo Fundo         |     8|
-| Ponta Grossa        |     3|
-| Ponta Grossa        |     1|
-| Toledo              |     1|
+    ##                   Var1 Freq
+    ## 1           Agua Santa    1
+    ## 2  Capao Bonito do Sul    2
+    ## 3               Castro    1
+    ## 4               Condor    1
+    ## 5              Coxilha   12
+    ## 6            Cruz Alta    6
+    ## 7                Girua    2
+    ## 8           Guarapuava    5
+    ## 9           Itapiranga    1
+    ## 10               Lages    2
+    ## 11            Londrina    1
+    ## 12       Muitos Capoes    1
+    ## 13         Passo Fundo    8
+    ## 14        Ponta Grossa    3
+    ## 15       Ponta Grossa     1
+    ## 16              Toledo    1
 
 ``` r
 nrow(table(fhb_trial$location))#Ponta Grossa repete (??)
@@ -173,25 +176,23 @@ nrow(table(fhb_trial$location))#Ponta Grossa repete (??)
 
 ``` r
 # Number of trial by publication
-kable(data.frame(table(fhb_trial$publication)), format="pandoc")
+data.frame(table(fhb_trial$publication))
 ```
 
-| Var1    |  Freq|
-|:--------|-----:|
-| Artigo  |     7|
-| Boletim |    24|
-| Resumo  |    17|
+    ##      Var1 Freq
+    ## 1  Artigo    7
+    ## 2 Boletim   24
+    ## 3  Resumo   17
 
 ``` r
 # Number of trial by state
-kable(data.frame(table(fhb_trial$state)), format="pandoc")
+data.frame(table(fhb_trial$state))
 ```
 
-| Var1 |  Freq|
-|:-----|-----:|
-| PR   |    11|
-| RS   |    34|
-| SC   |     3|
+    ##   Var1 Freq
+    ## 1   PR   11
+    ## 2   RS   34
+    ## 3   SC    3
 
 ``` r
 # entries with D value lower than zero
@@ -515,14 +516,14 @@ anova(fhb_mv_AI, L=rbind(c(0,1,-1,0,0),
 ``` r
 ### by fungicide treatment
 
-fhb_mv_AI_D <- rma.mv(yi2, vi2,
+fhb_mv_AI_D <- rma.mv(yield, vi2,
                       mods = ~ AI_nspray2, 
                       method="ML",random = list(~ AI_nspray2 | trial, ~1 | id),                       struct="UN", 
                       data=fhb_yield, 
                       control = list(optimizer="nlm"))
 ```
 
-    ## Warning in rma.mv(yi2, vi2, mods = ~AI_nspray2, method = "ML", random =
+    ## Warning in rma.mv(yield, vi2, mods = ~AI_nspray2, method = "ML", random =
     ## list(~AI_nspray2 | : Some combinations of the levels of the inner factor
     ## never occurred. Corresponding 'rho' value(s) fixed to 0.
 
@@ -624,7 +625,7 @@ table(fhb_yield$cons_group)
 
 ``` r
 ### Model 
-fhb_mv_AI_cons <- rma.mv(yi2, vi2, 
+fhb_mv_AI_cons <- rma.mv(yield, vi2, 
                          mods = ~ AI_nspray2 * cons_group, 
                          method="ML",
                          random = ~ AI_nspray2 | trial/cons_group, 
