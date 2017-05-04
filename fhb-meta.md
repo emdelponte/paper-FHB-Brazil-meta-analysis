@@ -1,4 +1,4 @@
-Netwwork meta-analysis of the effect of fungicides for FHB control in Brazil
+Network meta-analysis of the effect of fungicides for FHB control in Brazil
 ================
 
 Introduction
@@ -164,15 +164,14 @@ data.frame(table(fhb_trial$location))
     ## 11            Londrina    1
     ## 12       Muitos Capoes    1
     ## 13         Passo Fundo    8
-    ## 14        Ponta Grossa    3
-    ## 15       Ponta Grossa     1
-    ## 16              Toledo    1
+    ## 14        Ponta Grossa    4
+    ## 15              Toledo    1
 
 ``` r
 nrow(table(fhb_trial$location))#Ponta Grossa repete (??)
 ```
 
-    ## [1] 16
+    ## [1] 15
 
 ``` r
 # Number of trial by publication

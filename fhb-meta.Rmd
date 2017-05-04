@@ -1,5 +1,5 @@
 ---
-title: "Netwwork meta-analysis of the effect of fungicides for FHB control in Brazil"
+title: "Network meta-analysis of the effect of fungicides for FHB control in Brazil"
 output: github_document
 ---
 
