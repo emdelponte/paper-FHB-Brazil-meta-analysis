@@ -1,6 +1,11 @@
 ---
-title: "Network meta-analysis of the effect of fungicides for FHB control in Brazil"
-output: github_document
+title: "Meta-analysis fungicide efficacy FHB"
+author: "Franklin Machado & Emerson Del Ponte"
+date: "`r Sys.Date()`"
+output:
+  prettydoc::html_pretty:
+    theme: leonids
+    highlight: vignette
 ---
 
 
