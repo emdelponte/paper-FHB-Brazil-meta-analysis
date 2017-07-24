@@ -1,0 +1,23 @@
+name: "my-website"
+navbar:
+  title: "FHB-meta-analysis"
+  left:
+    - text: "Home"
+      icon: fa fa-home 
+      href: index.html
+    - text: "Read the article"
+      icon: fa fa-file-text-o 
+      href: article.html
+    - text: "Datasets"
+      icon: fa fa-table 
+      href: data.html
+    - text: "Data analysis"
+      icon: fa fa-file-code-o 
+      href: code.html
+    - text: "Plots"
+      icon: fa-bar-chart 
+      href: plots.html
+      
+  right:
+    - icon: fa-github-square 
+      href: https://github.com/emdelponte/paper-FHB-Brazil-meta-analysis

@@ -1,0 +1,958 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+
+<meta charset="utf-8" />
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="generator" content="pandoc" />
+
+
+
+
+<title></title>
+
+<script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/flatly.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<script src="site_libs/jqueryui-1.11.4/jquery-ui.min.js"></script>
+<link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<link href="site_libs/highlightjs-1.1/default.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-1.1/highlight.js"></script>
+<link href="site_libs/pagedtable-1.1/css/pagedtable.css" rel="stylesheet" />
+<script src="site_libs/pagedtable-1.1/js/pagedtable.js"></script>
+<link href="site_libs/font-awesome-4.5.0/css/font-awesome.min.css" rel="stylesheet" />
+
+<style type="text/css">code{white-space: pre;}</style>
+<style type="text/css">
+  pre:not([class]) {
+    background-color: white;
+  }
+</style>
+<script type="text/javascript">
+if (window.hljs && document.readyState && document.readyState === "complete") {
+   window.setTimeout(function() {
+      hljs.initHighlighting();
+   }, 0);
+}
+</script>
+
+
+
+<style type="text/css">
+h1 {
+  font-size: 34px;
+}
+h1.title {
+  font-size: 38px;
+}
+h2 {
+  font-size: 30px;
+}
+h3 {
+  font-size: 24px;
+}
+h4 {
+  font-size: 18px;
+}
+h5 {
+  font-size: 16px;
+}
+h6 {
+  font-size: 12px;
+}
+.table th:not([align]) {
+  text-align: left;
+}
+</style>
+
+<link rel="stylesheet" href="my-style.css" type="text/css" />
+
+</head>
+
+<body>
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+code {
+  color: inherit;
+  background-color: rgba(0, 0, 0, 0.04);
+}
+img {
+  max-width:100%;
+  height: auto;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+</style>
+
+
+<style type="text/css">
+/* padding for bootstrap navbar */
+body {
+  padding-top: 60px;
+  padding-bottom: 40px;
+}
+/* offset scroll position for anchor links (for fixed navbar)  */
+.section h1 {
+  padding-top: 65px;
+  margin-top: -65px;
+}
+
+.section h2 {
+  padding-top: 65px;
+  margin-top: -65px;
+}
+.section h3 {
+  padding-top: 65px;
+  margin-top: -65px;
+}
+.section h4 {
+  padding-top: 65px;
+  margin-top: -65px;
+}
+.section h5 {
+  padding-top: 65px;
+  margin-top: -65px;
+}
+.section h6 {
+  padding-top: 65px;
+  margin-top: -65px;
+}
+</style>
+
+<script>
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark it active
+  menuAnchor.parent().addClass('active');
+
+  // if it's got a parent navbar menu mark it active as well
+  menuAnchor.closest('li.dropdown').addClass('active');
+});
+</script>
+
+
+<div class="container-fluid main-container">
+
+<!-- tabsets -->
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+</script>
+
+<!-- code folding -->
+
+
+
+
+<script>
+$(document).ready(function ()  {
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2,h3",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_').toLowerCase();
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = true;
+    options.smoothScroll = false;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
+
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.90em;
+  padding-left: 25px;
+  text-indent: 0;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+
+</style>
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row-fluid">
+<div class="col-xs-12 col-sm-4 col-md-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-xs-12 col-sm-8 col-md-9">
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">FHB-meta-analysis</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li>
+  <a href="index.html">
+    <span class="fa fa fa fa-home"></span>
+     
+    Home
+  </a>
+</li>
+<li>
+  <a href="article.html">
+    <span class="fa fa fa fa-file-text-o"></span>
+     
+    Read the article
+  </a>
+</li>
+<li>
+  <a href="data.html">
+    <span class="fa fa fa fa-table"></span>
+     
+    Datasets
+  </a>
+</li>
+<li>
+  <a href="code.html">
+    <span class="fa fa fa fa-file-code-o"></span>
+     
+    Data analysis
+  </a>
+</li>
+<li>
+  <a href="plots.html">
+    <span class="fa fa-bar-chart"></span>
+     
+    Plots
+  </a>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li>
+  <a href="https://github.com/emdelponte/paper-FHB-Brazil-meta-analysis">
+    <span class="fa fa-github-square"></span>
+     
+  </a>
+</li>
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div class="fluid-row" id="header">
+
+
+
+
+</div>
+
+
+<div id="introduction" class="section level2">
+<h2>Introduction</h2>
+<p>We conducted a two-stage multi-treatment or network meta-analysis for the simultaneous analysis of all treatments of interest and which co-occur in the same trial. This approach allows direct comparisons of treatments with each other, and takes into account all the correlations (see Madden et al. 2016 for more details).</p>
+<p>The most common form of effect size used in traditional meta-analysis are based on the contrasts of the treatment of interest with a common reference (e.g. control treatment), such as mean difference, response ratio, etc. This is known as the conditional modeling approach, also named contrast-based meta-analysis. An alternative and simpler approach, which is commonly used in plant pathology, is to fit a two-way linear mixed model directly to the treatment means. This is know as the unconditional modeling approach or arm-based meta-analysis.</p>
+</div>
+<div id="import-data" class="section level2">
+<h2>Import data</h2>
+<p>Let’s first import the data and load the packages needed for the analyses.</p>
+<pre class="r"><code>fhb_sev &lt;- read.csv(&quot;fhb_sev.csv&quot;, sep = &quot;,&quot;, h = T)
+fhb_yield &lt;- read.csv(&quot;fhb_yield.csv&quot;, sep = &quot;,&quot;, h = T)</code></pre>
+<pre class="r"><code># Load packages 
+library(tidyverse)
+library(metafor)
+library(ggthemes)
+library(cowplot)
+library(scales)
+library(knitr)
+library(nloptr)
+library(minqa)
+library(DT)</code></pre>
+</div>
+<div id="effect-sizes" class="section level2">
+<h2>Effect-sizes</h2>
+<p>Here, we used the latter approach fitted directly to the log of the means (for both FHB index and yield) for further obtaining the relative effect (control efficacy and yield response). For yield, we fitted the model directly to the mean yield of treatments to further estimate the yield response, or the difference (D) from using the fungicides. The D was calculated for each treatment within a study for plotting purposes, but the meta-analyitic estimate of D was obtained from the difference of the estimates by mixed model fitted directly to the treatment means.</p>
+<pre class="r"><code># log of FHB index
+fhb_sev$yi &lt;- log(fhb_sev$sev)
+hist(fhb_sev$yi)</code></pre>
+<p><img src="code_files/figure-html/unnamed-chunk-3-1.png" width="672" /></p>
+<pre class="r"><code># log of yield
+fhb_yield$yi &lt;- log(fhb_yield$yield)
+hist(fhb_yield$yi)</code></pre>
+<p><img src="code_files/figure-html/unnamed-chunk-3-2.png" width="672" /></p>
+<pre class="r"><code># difference (D) in yield between treatment and non-treated check
+fhb_yield$D &lt;-fhb_yield$yield - fhb_yield$yield_check
+hist(fhb_yield$D)</code></pre>
+<p><img src="code_files/figure-html/unnamed-chunk-3-3.png" width="672" /></p>
+</div>
+<div id="sampling-variance" class="section level2">
+<h2>Sampling variance</h2>
+<p>Let’s create the sampling variance variables <code>vi</code> for the respective effect-sizes.</p>
+<pre class="r"><code># Sampling variance for the log of FHB index
+fhb_sev$vi &lt;- with(fhb_sev, V_sev / (n * sev^2))
+
+# Sampling variance for the log of yield
+fhb_yield$vi &lt;- with(fhb_yield, V_yield / (n * yield^2))
+
+# Sampling variance for yield
+fhb_yield$vi2 &lt;- fhb_yield$V_yield/fhb_yield$n # multivariate approach</code></pre>
+</div>
+<div id="treatments" class="section level2">
+<h2>Treatments</h2>
+<p>There are tree fungicides of interest in this study:</p>
+<ul>
+<li>Tebuconazole</li>
+<li>Propiconazole</li>
+<li>Carbendazim</li>
+</ul>
+<p>Most of them were used as a single application but Tebuconazole was tested as single or sequential application. Let’s get the number of entries per fungicide. The <code>AACHECK</code> refers to the plots where no fungicide was applied, or the control.</p>
+<pre class="r"><code>table(fhb_sev$AI, fhb_sev$n_spray2)</code></pre>
+<pre><code>##          
+##            0  1  2
+##   AACHECK 35  0  0
+##   CARB     0  3 29
+##   PROP     0  0 27
+##   TEBU     0 23 22</code></pre>
+<p>Let’s create another variable to identify each of these four treatments. We will omit CARB applied once because there are only three entries.</p>
+<pre class="r"><code>library(tidyverse)
+fhb_sev &lt;- fhb_sev %&gt;% 
+  mutate(AI_nspray2 = paste(AI, n_spray2,sep=&#39;_&#39;)) %&gt;% 
+  filter(AI_nspray2 != &quot;CARB_1&quot;) %&gt;% 
+  filter(trial, length(trial)&gt;1) 
+
+fhb_yield &lt;- fhb_yield %&gt;% 
+  mutate(AI_nspray2 = paste(AI, n_spray2,sep=&#39;_&#39;)) %&gt;% 
+  filter(AI_nspray2 != &quot;CARB_1&quot;) %&gt;% 
+  filter(trial, length(trial)&gt;1) </code></pre>
+<p>Finally, we create a unique identifier for the treatment within a trial. This can be used further as random effects in the model.</p>
+<pre class="r"><code># ID variable for each entry within a trial
+
+fhb_sev$id &lt;- 1:nrow(fhb_sev)
+fhb_yield$id &lt;- 1:nrow(fhb_yield)</code></pre>
+</div>
+<div id="descriptive-analysis" class="section level2">
+<h2>Descriptive analysis</h2>
+<p>We will get some summary information which may of use to describe the dataset when writing the material and methods and results section of the paper.</p>
+<pre class="r"><code># Number of entries by fungicide and number of sprays
+table(fhb_yield$AI, fhb_yield$n_spray2)</code></pre>
+<pre><code>##          
+##            0  1  2
+##   AACHECK 48  0  0
+##   CARB     0  0 41
+##   PROP     0  0 27
+##   TEBU     0 38 34</code></pre>
+<pre class="r"><code># Number of unique trials
+length(unique(fhb_yield$trial))</code></pre>
+<pre><code>## [1] 48</code></pre>
+<pre class="r"><code># Number of unique studies
+length(unique(fhb_yield$study))</code></pre>
+<pre><code>## [1] 15</code></pre>
+<pre class="r"><code># Number of trials by year
+fhb_trial &lt;- fhb_yield %&gt;% 
+  group_by(trial) %&gt;% 
+  filter(row_number() ==1)
+
+data.frame(table(fhb_trial$year))</code></pre>
+<div data-pagedtable="false">
+<script data-pagedtable-source type="application/json">
+{"columns":[{"label":["Var1"],"name":[1],"type":["fctr"],"align":["left"]},{"label":["Freq"],"name":[2],"type":["int"],"align":["right"]}],"data":[{"1":"2000","2":"4"},{"1":"2004","2":"1"},{"1":"2005","2":"1"},{"1":"2007","2":"1"},{"1":"2009","2":"1"},{"1":"2010","2":"1"},{"1":"2011","2":"7"},{"1":"2012","2":"6"},{"1":"2013","2":"17"},{"1":"2014","2":"9"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
+  </script>
+</div>
+<pre class="r"><code>nrow(table(fhb_trial$year))</code></pre>
+<pre><code>## [1] 10</code></pre>
+<pre class="r"><code># Number of trial by location
+data.frame(table(fhb_trial$location))</code></pre>
+<div data-pagedtable="false">
+<script data-pagedtable-source type="application/json">
+{"columns":[{"label":["Var1"],"name":[1],"type":["fctr"],"align":["left"]},{"label":["Freq"],"name":[2],"type":["int"],"align":["right"]}],"data":[{"1":"Agua Santa","2":"1"},{"1":"Capao Bonito do Sul","2":"2"},{"1":"Castro","2":"1"},{"1":"Condor","2":"1"},{"1":"Coxilha","2":"12"},{"1":"Cruz Alta","2":"6"},{"1":"Girua","2":"2"},{"1":"Guarapuava","2":"5"},{"1":"Itapiranga","2":"1"},{"1":"Lages","2":"2"},{"1":"Londrina","2":"1"},{"1":"Muitos Capoes","2":"1"},{"1":"Passo Fundo","2":"8"},{"1":"Ponta Grossa","2":"4"},{"1":"Toledo","2":"1"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
+  </script>
+</div>
+<pre class="r"><code># Number of trials by publication type
+data.frame(table(fhb_trial$publication))</code></pre>
+<div data-pagedtable="false">
+<script data-pagedtable-source type="application/json">
+{"columns":[{"label":["Var1"],"name":[1],"type":["fctr"],"align":["left"]},{"label":["Freq"],"name":[2],"type":["int"],"align":["right"]}],"data":[{"1":"Artigo","2":"7"},{"1":"Boletim","2":"24"},{"1":"Resumo","2":"17"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
+  </script>
+</div>
+<pre class="r"><code># Number of trials by state
+data.frame(table(fhb_trial$state))</code></pre>
+<div data-pagedtable="false">
+<script data-pagedtable-source type="application/json">
+{"columns":[{"label":["Var1"],"name":[1],"type":["fctr"],"align":["left"]},{"label":["Freq"],"name":[2],"type":["int"],"align":["right"]}],"data":[{"1":"PR","2":"11"},{"1":"RS","2":"34"},{"1":"SC","2":"3"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
+  </script>
+</div>
+<pre class="r"><code># n. of entries with D value lower than zero
+negat_D &lt;- fhb_yield %&gt;% 
+  filter(D &lt; 0)</code></pre>
+<p>We also want to check whether the difference in means (D) can be expressed in absolute rather than relative terms. The former is indicated for situations in which the coefficient of variation for the response variable in the check treatment is not too high (Paul et al. 2008)</p>
+<p>We can see that CV was high for FHB index, but much lower for yield. It is safer then to work with the absolute means difference for yield than FHB index, which will also require log-transformation.</p>
+</div>
+<div id="meta-analysis" class="section level2">
+<h2>Meta-analysis</h2>
+<div id="control-efficacy" class="section level3">
+<h3>Control efficacy</h3>
+<p>Let’s fit an arm-based model using the <code>rma.mv</code> function of metafor to get the estimates for each treatment.</p>
+<pre class="r"><code>fhb_mv_AI &lt;- rma.mv(yi, vi, 
+                    mods = ~ AI_nspray2, 
+                    method=&quot;ML&quot;,
+                    random = list(~ AI_nspray2 | trial, ~1 | id), 
+                    struct=&quot;UN&quot;, data=fhb_sev)</code></pre>
+<p>Let’s see the summary ouput provided by this function. Note that the intercept is the control treatment and all treatments differed significantly from the control based on the very low P-values.</p>
+<pre class="r"><code>fhb_mv_AI</code></pre>
+<pre><code>## 
+## Multivariate Meta-Analysis Model (k = 136; method: ML)
+## 
+## Variance Components: 
+## 
+##             estim    sqrt  nlvls  fixed  factor
+## sigma^2    0.0059  0.0766    136     no      id
+## 
+## outer factor: trial      (nlvls = 35)
+## inner factor: AI_nspray2 (nlvls = 5)
+## 
+##             estim    sqrt  k.lvl  fixed      level
+## tau^2.1    1.7461  1.3214     35     no  AACHECK_0
+## tau^2.2    1.4947  1.2226     29     no     CARB_2
+## tau^2.3    1.7639  1.3281     27     no     PROP_2
+## tau^2.4    2.2428  1.4976     23     no     TEBU_1
+## tau^2.5    1.8756  1.3695     22     no     TEBU_2
+## 
+##            rho.AACH  rho.CARB  rho.PROP  rho.TEBU_1  rho.TEBU_2    AACH
+## AACHECK_0         1    0.8786    0.9325      0.9526      0.9597       -
+## CARB_2       0.8786         1    0.9767      0.0000      0.9556      21
+## PROP_2       0.9325    0.9767         1      0.0000      0.9952      26
+## TEBU_1       0.9526    0.0000    0.0000           1      0.9997       9
+## TEBU_2       0.9597    0.9556    0.9952      0.9997           1      13
+##            CARB  PROP  TEBU_1  TEBU_2
+## AACHECK_0    no    no      no      no
+## CARB_2        -    no     yes      no
+## PROP_2       21     -     yes      no
+## TEBU_1        0     0       -      no
+## TEBU_2        8    11       2       -
+## 
+## Test for Residual Heterogeneity: 
+## QE(df = 131) = 47330.3777, p-val &lt; .0001
+## 
+## Test of Moderators (coefficient(s) 2,3,4,5): 
+## QM(df = 4) = 87.2446, p-val &lt; .0001
+## 
+## Model Results:
+## 
+##                   estimate      se     zval    pval    ci.lb    ci.ub     
+## intrcpt             2.1735  0.2247   9.6727  &lt;.0001   1.7331   2.6139  ***
+## AI_nspray2CARB_2   -0.8001  0.1319  -6.0675  &lt;.0001  -1.0586  -0.5417  ***
+## AI_nspray2PROP_2   -0.6324  0.0996  -6.3469  &lt;.0001  -0.8277  -0.4371  ***
+## AI_nspray2TEBU_1   -0.8790  0.1254  -7.0070  &lt;.0001  -1.1248  -0.6331  ***
+## AI_nspray2TEBU_2   -0.7596  0.0888  -8.5508  &lt;.0001  -0.9337  -0.5855  ***
+## 
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</code></pre>
+<p>We can set linear contrasts between treatments of interest and get the P-valued using the <code>anova</code> function.</p>
+<pre class="r"><code>anova(fhb_mv_AI, L=rbind(c(0,1,-1,0,0), 
+                         c(0,0,-1,1,0),
+                         c(0,0,-1,0,1),
+                         c(0,0,0,-1,1)))  </code></pre>
+<pre><code>## 
+## Hypotheses:                                           
+## 1:  AI_nspray2CARB_2 - AI_nspray2PROP_2 = 0
+## 2: -AI_nspray2PROP_2 + AI_nspray2TEBU_1 = 0
+## 3: -AI_nspray2PROP_2 + AI_nspray2TEBU_2 = 0
+## 4: -AI_nspray2TEBU_1 + AI_nspray2TEBU_2 = 0
+## 
+## Results:
+##    estimate     se    zval   pval
+## 1:  -0.1677 0.0852 -1.9675 0.0491
+## 2:  -0.2466 0.1315 -1.8755 0.0607
+## 3:  -0.1271 0.0752 -1.6907 0.0909
+## 4:   0.1194 0.1100  1.0860 0.2775</code></pre>
+<p>Let’s back-transform (exponential) the estimated mean (and respective 95%CIs) difference of the logs to obtain the response ratio, which is further expressed as percent reduction in FHB index relative to the check treatment (control efficacy) for each fungicide. We then prepare the data for plotting purposes.</p>
+<pre class="r"><code>results_AI &lt;- data.frame(cbind((1-exp(fhb_mv_AI$b))*100, 
+                              (1-exp(fhb_mv_AI$ci.lb))*100,
+                              (1-exp(fhb_mv_AI$ci.ub))*100))
+
+treat &lt;- c(&quot;Check&quot;, &quot;CARB2x&quot;, &quot;PROP2x&quot;, &quot;TEBU1x&quot;, &quot;TEBU2x&quot;)
+efficacy &lt;- tbl_df(results_AI)
+efficacy$treat &lt;- treat
+efficacy$se &lt;- fhb_mv_AI$se
+colnames(efficacy) &lt;- c(&quot;Mean&quot;, &quot;CIsup&quot;, &quot;CIinf&quot;, &quot;Treatment&quot;, &quot;SE&quot;)
+efficacy</code></pre>
+<div data-pagedtable="false">
+<script data-pagedtable-source type="application/json">
+{"columns":[{"label":["Mean"],"name":[1],"type":["dbl"],"align":["right"]},{"label":["CIsup"],"name":[2],"type":["dbl"],"align":["right"]},{"label":["CIinf"],"name":[3],"type":["dbl"],"align":["right"]},{"label":["Treatment"],"name":[4],"type":["chr"],"align":["left"]},{"label":["SE"],"name":[5],"type":["dbl"],"align":["right"]}],"data":[{"1":"-778.88805","2":"-465.80272","3":"-1265.21827","4":"Check","5":"0.22470416"},{"1":"55.07284","2":"65.30548","3":"41.82223","4":"CARB2x","5":"0.13187018"},{"1":"46.86973","2":"56.29554","3":"35.41104","4":"PROP2x","5":"0.09964297"},{"1":"58.47913","2":"67.52944","3":"46.90627","4":"TEBU1x","5":"0.12544233"},{"1":"53.21278","2":"60.68888","3":"44.31490","4":"TEBU2x","5":"0.08882948"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
+  </script>
+</div>
+<p>We can visualize this quickly, but we omit the check treatment.</p>
+<pre class="r"><code>efficacy %&gt;% 
+  filter(Treatment != &quot;Check&quot;) %&gt;% 
+  ggplot(aes(Treatment, Mean))+
+  geom_point(aes(size=1/SE), shape=15)+
+  geom_linerange(aes(ymin = CIinf, ymax = CIsup))+
+  coord_flip()+
+  theme_grey()+
+  ylim(20,80)</code></pre>
+<p><img src="code_files/figure-html/unnamed-chunk-14-1.png" width="672" /></p>
+<div id="inconsistency-index" class="section level4">
+<h4>Inconsistency: index</h4>
+<p>In a network meta-analysis, it is important to check whether the results are consistent across the different designs. We included this variable manually in the original dataset and tested the interaction effect of treatments and design group.</p>
+</div>
+<div id="moderators" class="section level4">
+<h4>Moderators</h4>
+<div id="fhb-index-base" class="section level5">
+<h5>FHB index base</h5>
+<pre class="r"><code># create the binary variable (dis_press)
+fhb_sev$dis_press &lt;- ifelse(as.numeric(fhb_sev$sev_check) &gt;7.0, 2, 1)
+
+# summarize number of trials per category of dis_press
+table(fhb_sev$AI_nspray2, fhb_sev$dis_press)</code></pre>
+<pre><code>##            
+##              1  2
+##   AACHECK_0 17 18
+##   CARB_2    19 10
+##   PROP_2    15 12
+##   TEBU_1     4 19
+##   TEBU_2    10 12</code></pre>
+<pre class="r"><code># Test effect of moderator 
+fhb_mv_AI_sev_check &lt;- rma.mv(yi, vi, 
+                              mods = ~ AI_nspray2*factor(dis_press),
+                              method=&quot;ML&quot;,
+                              random = list(~ AI_nspray2 | trial, ~1 | id),
+                              struct=&quot;UN&quot;, 
+                              data=fhb_sev)
+
+# Contrast levels of moderators
+anova(fhb_mv_AI_sev_check,btt=7:10)</code></pre>
+<pre><code>## 
+## Test of Moderators (coefficient(s) 7,8,9,10): 
+## QM(df = 4) = 6.5407, p-val = 0.1622</code></pre>
+</div>
+<div id="yield-base" class="section level5">
+<h5>Yield base</h5>
+<pre class="r"><code># create binary variable (yield_class)
+summary(fhb_sev$yield_check) # Median = 2993; Mean = 2915</code></pre>
+<pre><code>##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+##   67.33 2673.00 3085.00 3012.00 3610.00 4984.00</code></pre>
+<pre class="r"><code>fhb_sev$yield_class &lt;- ifelse(fhb_sev$yield_check &gt; 3000, 2, 1)
+
+# check number of trials per yield_class category
+table(fhb_sev$yield_class, fhb_sev$AI_nspray2)</code></pre>
+<pre><code>##    
+##     AACHECK_0 CARB_2 PROP_2 TEBU_1 TEBU_2
+##   1        16     10     12     11     10
+##   2        19     19     15     12     12</code></pre>
+<pre class="r"><code># test the effect of moderator
+fhb_mv_AI_yield_class &lt;- rma.mv(yi, vi, 
+                                mods = ~ AI_nspray2*factor(yield_class),
+                                method=&quot;ML&quot;,
+                                random = list(~ AI_nspray2 | trial, ~1 | id), 
+                                struct=&quot;UN&quot;, 
+                                data=fhb_sev)
+
+anova(fhb_mv_AI_yield_class, btt=7:10) </code></pre>
+<pre><code>## 
+## Test of Moderators (coefficient(s) 7,8,9,10): 
+## QM(df = 4) = 5.5750, p-val = 0.2332</code></pre>
+</div>
+<div id="year-as-continuous" class="section level5">
+<h5>Year as continuous</h5>
+<pre class="r"><code># Moderator year (continuous)
+# Number of entries by fungicide and year
+table(fhb_sev$AI_nspray2, fhb_sev$year)</code></pre>
+<pre><code>##            
+##             2000 2004 2005 2007 2010 2011 2012 2013 2014
+##   AACHECK_0    4    1    1    1    1    7    6    9    5
+##   CARB_2       0    0    0    0    0    7    5   16    1
+##   PROP_2       0    0    0    0    0    7    6    8    6
+##   TEBU_1      16    3    1    1    1    0    0    1    0
+##   TEBU_2       4    0    0    0    0   14    0    0    4</code></pre>
+<pre class="r"><code>fhb_mv_AI_year &lt;- rma.mv(yi, vi, 
+                         mods = ~ AI_nspray2*as.numeric(year), 
+                         method=&quot;ML&quot;,
+                         random =list(~ AI_nspray2 | trial, ~1 | id),
+                         struct=&quot;UN&quot;, 
+                         data=fhb_sev)
+
+anova(fhb_mv_AI_year, btt=7:10)</code></pre>
+<pre><code>## 
+## Test of Moderators (coefficient(s) 7,8,9,10): 
+## QM(df = 4) = 6.8229, p-val = 0.1456</code></pre>
+</div>
+</div>
+</div>
+<div id="yield-response-relative" class="section level3">
+<h3>Yield response: relative</h3>
+<pre class="r"><code>### AI_nspray2 (AI and number of sprays)
+
+fhb_mv_AI &lt;- rma.mv(yi, vi, 
+                    mods = ~ AI_nspray2, 
+                    method=&quot;ML&quot;,random = list(~ AI_nspray2 | trial, ~1 | id), 
+                    struct=&quot;UN&quot;, data=fhb_yield)</code></pre>
+<pre><code>## Warning in rma.mv(yi, vi, mods = ~AI_nspray2, method = &quot;ML&quot;, random =
+## list(~AI_nspray2 | : Some combinations of the levels of the inner factor
+## never occurred. Corresponding &#39;rho&#39; value(s) fixed to 0.</code></pre>
+<pre class="r"><code>summary(fhb_mv_AI)</code></pre>
+<pre><code>## 
+## Multivariate Meta-Analysis Model (k = 188; method: ML)
+## 
+##    logLik   Deviance        AIC        BIC       AICc  
+##  138.7104   596.6813  -237.4208  -172.6920  -232.3909  
+## 
+## Variance Components: 
+## 
+##             estim    sqrt  nlvls  fixed  factor
+## sigma^2    0.0000  0.0024    188     no      id
+## 
+## outer factor: trial      (nlvls = 48)
+## inner factor: AI_nspray2 (nlvls = 5)
+## 
+##             estim    sqrt  k.lvl  fixed      level
+## tau^2.1    0.3782  0.6149     48     no  AACHECK_0
+## tau^2.2    0.4160  0.6450     41     no     CARB_2
+## tau^2.3    0.3533  0.5944     27     no     PROP_2
+## tau^2.4    0.2844  0.5333     38     no     TEBU_1
+## tau^2.5    0.2987  0.5465     34     no     TEBU_2
+## 
+##            rho.AACH  rho.CARB  rho.PROP  rho.TEBU_1  rho.TEBU_2    AACH
+## AACHECK_0         1    0.9914    0.9890      0.9861      0.9805       -
+## CARB_2       0.9914         1    0.9990      0.9993      0.9975      33
+## PROP_2       0.9890    0.9990         1      0.0000      0.9985      26
+## TEBU_1       0.9861    0.9993    0.0000           1      0.9991      22
+## TEBU_2       0.9805    0.9975    0.9985      0.9991           1      25
+##            CARB  PROP  TEBU_1  TEBU_2
+## AACHECK_0    no    no      no      no
+## CARB_2        -    no      no      no
+## PROP_2       21     -     yes      no
+## TEBU_1       12     0       -      no
+## TEBU_2       20    11      14       -
+## 
+## Test for Residual Heterogeneity: 
+## QE(df = 183) = 14956.8086, p-val &lt; .0001
+## 
+## Test of Moderators (coefficient(s) 2,3,4,5): 
+## QM(df = 4) = 84.8828, p-val &lt; .0001
+## 
+## Model Results:
+## 
+##                   estimate      se     zval    pval   ci.lb   ci.ub     
+## intrcpt             7.9375  0.0891  89.0957  &lt;.0001  7.7629  8.1121  ***
+## AI_nspray2CARB_2    0.1202  0.0159   7.5520  &lt;.0001  0.0890  0.1514  ***
+## AI_nspray2PROP_2    0.1482  0.0173   8.5882  &lt;.0001  0.1144  0.1820  ***
+## AI_nspray2TEBU_1    0.1599  0.0216   7.3904  &lt;.0001  0.1175  0.2023  ***
+## AI_nspray2TEBU_2    0.1758  0.0222   7.9333  &lt;.0001  0.1324  0.2193  ***
+## 
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</code></pre>
+<pre class="r"><code>results_I&lt;- data.frame(cbind((exp(fhb_mv_AI$b)-1)*100, 
+                             (exp(fhb_mv_AI$ci.lb)-1)*100,
+                             (exp(fhb_mv_AI$ci.ub)-1)*100))
+
+results_I</code></pre>
+<div data-pagedtable="false">
+<script data-pagedtable-source type="application/json">
+{"columns":[{"label":["X1"],"name":[1],"type":["dbl"],"align":["right"]},{"label":["X2"],"name":[2],"type":["dbl"],"align":["right"]},{"label":["X3"],"name":[3],"type":["dbl"],"align":["right"]}],"data":[{"1":"279925.38239","2":"2.350606e+05","3":"333349.65920"},{"1":"12.77164","2":"9.308158e+00","3":"16.34486"},{"1":"15.97217","2":"1.211592e+01","3":"19.96106"},{"1":"17.33967","2":"1.246772e+01","3":"22.42267"},{"1":"19.22402","2":"1.415570e+01","3":"24.51736"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
+  </script>
+</div>
+<pre class="r"><code># Linear contrasts between treatments
+
+anova(fhb_mv_AI, L=rbind(c(0,1,-1,0,0), 
+                         c(0,0,1,-1,0),
+                         c(0,0,1,0,-1),
+                         c(0,0,0,-1,1))) </code></pre>
+<pre><code>## 
+## Hypotheses:                                           
+## 1:  AI_nspray2CARB_2 - AI_nspray2PROP_2 = 0
+## 2:  AI_nspray2PROP_2 - AI_nspray2TEBU_1 = 0
+## 3:  AI_nspray2PROP_2 - AI_nspray2TEBU_2 = 0
+## 4: -AI_nspray2TEBU_1 + AI_nspray2TEBU_2 = 0
+## 
+## Results:
+##    estimate     se    zval   pval
+## 1:  -0.0280 0.0131 -2.1298 0.0332
+## 2:  -0.0117 0.0168 -0.6965 0.4861
+## 3:  -0.0277 0.0135 -2.0509 0.0403
+## 4:   0.0159 0.0125  1.2783 0.2011</code></pre>
+</div>
+<div id="yield-response-absolute" class="section level3">
+<h3>Yield response: absolute</h3>
+<pre class="r"><code>### by fungicide treatment
+
+fhb_mv_AI_D &lt;- rma.mv(yield, vi2,
+                      mods = ~ AI_nspray2, 
+                      method=&quot;ML&quot;,random = list(~ AI_nspray2 | trial, ~1 | id),                       struct=&quot;UN&quot;, 
+                      data=fhb_yield, 
+                      control = list(optimizer=&quot;nlm&quot;))</code></pre>
+<pre><code>## Warning in rma.mv(yield, vi2, mods = ~AI_nspray2, method = &quot;ML&quot;, random =
+## list(~AI_nspray2 | : Some combinations of the levels of the inner factor
+## never occurred. Corresponding &#39;rho&#39; value(s) fixed to 0.</code></pre>
+<pre class="r"><code>summary(fhb_mv_AI_D)</code></pre>
+<pre><code>## 
+## Multivariate Meta-Analysis Model (k = 188; method: ML)
+## 
+##     logLik    Deviance         AIC         BIC        AICc  
+## -1363.9516    564.5622   2767.9032   2832.6320   2772.9331  
+## 
+## Variance Components: 
+## 
+##             estim    sqrt  nlvls  fixed  factor
+## sigma^2    0.0000  0.0000    188     no      id
+## 
+## outer factor: trial      (nlvls = 48)
+## inner factor: AI_nspray2 (nlvls = 5)
+## 
+##                   estim       sqrt  k.lvl  fixed      level
+## tau^2.1    1172821.1556  1082.9687     48     no  AACHECK_0
+## tau^2.2    1649776.5517  1284.4363     41     no     CARB_2
+## tau^2.3    1513922.4058  1230.4155     27     no     PROP_2
+## tau^2.4    1298155.3558  1139.3662     38     no     TEBU_1
+## tau^2.5    1377800.2849  1173.7974     34     no     TEBU_2
+## 
+##            rho.AACH  rho.CARB  rho.PROP  rho.TEBU_1  rho.TEBU_2    AACH
+## AACHECK_0         1    0.9595    0.9533      0.9404      0.9168       -
+## CARB_2       0.9595         1    0.9984      0.9975      0.9919      33
+## PROP_2       0.9533    0.9984         1      0.0000      0.9938      26
+## TEBU_1       0.9404    0.9975    0.0000           1      0.9971      22
+## TEBU_2       0.9168    0.9919    0.9938      0.9971           1      25
+##            CARB  PROP  TEBU_1  TEBU_2
+## AACHECK_0    no    no      no      no
+## CARB_2        -    no      no      no
+## PROP_2       21     -     yes      no
+## TEBU_1       12     0       -      no
+## TEBU_2       20    11      14       -
+## 
+## Test for Residual Heterogeneity: 
+## QE(df = 183) = 42895.4678, p-val &lt; .0001
+## 
+## Test of Moderators (coefficient(s) 2,3,4,5): 
+## QM(df = 4) = 63.1327, p-val &lt; .0001
+## 
+## Model Results:
+## 
+##                    estimate        se     zval    pval      ci.lb
+## intrcpt           3140.0622  157.6673  19.9158  &lt;.0001  2831.0400
+## AI_nspray2CARB_2   455.7985   64.5791   7.0580  &lt;.0001   329.2257
+## AI_nspray2PROP_2   497.2890   64.7478   7.6804  &lt;.0001   370.3856
+## AI_nspray2TEBU_1   456.6366   69.1584   6.6028  &lt;.0001   321.0886
+## AI_nspray2TEBU_2   558.3048   76.4817   7.2998  &lt;.0001   408.4034
+##                       ci.ub     
+## intrcpt           3449.0843  ***
+## AI_nspray2CARB_2   582.3713  ***
+## AI_nspray2PROP_2   624.1924  ***
+## AI_nspray2TEBU_1   592.1845  ***
+## AI_nspray2TEBU_2   708.2062  ***
+## 
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</code></pre>
+<pre class="r"><code># Linear contrasts between treatments
+
+anova(fhb_mv_AI_D, L=rbind(c(0,1,-1,0,0), 
+                         c(0,0,1,-1,0),
+                         c(0,0,1,0,-1),
+                         c(0,0,0,-1,1)))</code></pre>
+<pre><code>## 
+## Hypotheses:                                           
+## 1:  AI_nspray2CARB_2 - AI_nspray2PROP_2 = 0
+## 2:  AI_nspray2PROP_2 - AI_nspray2TEBU_1 = 0
+## 3:  AI_nspray2PROP_2 - AI_nspray2TEBU_2 = 0
+## 4: -AI_nspray2TEBU_1 + AI_nspray2TEBU_2 = 0
+## 
+## Results:
+##    estimate      se    zval   pval
+## 1: -41.4905 34.4974 -1.2027 0.2291
+## 2:  40.6524 53.9755  0.7532 0.4514
+## 3: -61.0158 41.7599 -1.4611 0.1440
+## 4: 101.6683 48.2911  2.1053 0.0353</code></pre>
+<div id="inconsistency" class="section level4">
+<h4>Inconsistency</h4>
+<pre class="r"><code>### Groups were inclued directly in the spreadsheet
+table(fhb_yield$cons_group)</code></pre>
+<pre><code>## 
+##  2  3  4  5  6  7  8  9 
+## 48 47 39 30 10  5  6  3</code></pre>
+<pre class="r"><code>### Model 
+fhb_mv_AI_cons &lt;- rma.mv(yield, vi2, 
+                         mods = ~ AI_nspray2 * cons_group, 
+                         method=&quot;ML&quot;,
+                         random = ~ AI_nspray2 | trial/cons_group, 
+                         struct=&quot;UN&quot;, data=fhb_yield)
+
+summary(fhb_mv_AI_cons)</code></pre>
+<pre><code>## 
+## Multivariate Meta-Analysis Model (k = 188; method: ML)
+## 
+##     logLik    Deviance         AIC         BIC        AICc  
+## -1522.6343    881.9277   3071.2686   3113.3424   3073.3606  
+## 
+## Variance Components: 
+## 
+##                  estim      sqrt  nlvls  fixed
+## sigma^2.1       0.0026    0.0513      5     no
+## sigma^2.2  610131.6560  781.1092    154     no
+## sigma^2.3  610135.6411  781.1118    154     no
+##                                 factor
+## sigma^2.1                   AI_nspray2
+## sigma^2.2             AI_nspray2/trial
+## sigma^2.3  AI_nspray2/trial/cons_group
+## 
+## Test for Residual Heterogeneity: 
+## QE(df = 178) = 31025.5225, p-val &lt; .0001
+## 
+## Test of Moderators (coefficient(s) 2,3,4,5,6,7,8,9,10): 
+## QM(df = 9) = 45.6361, p-val &lt; .0001
+## 
+## Model Results:
+## 
+##                               estimate        se     zval    pval
+## intrcpt                      4207.4600  387.1908  10.8666  &lt;.0001
+## AI_nspray2CARB_2             1117.6093  847.0772   1.3194  0.1870
+## AI_nspray2PROP_2             -180.3983  674.6374  -0.2674  0.7892
+## AI_nspray2TEBU_1              825.6867  682.4619   1.2099  0.2263
+## AI_nspray2TEBU_2              783.8948  596.5568   1.3140  0.1888
+## cons_group                   -279.0646   90.7879  -3.0738  0.0021
+## AI_nspray2CARB_2:cons_group  -233.8480  268.4444  -0.8711  0.3837
+## AI_nspray2PROP_2:cons_group    99.0119  150.4594   0.6581  0.5105
+## AI_nspray2TEBU_1:cons_group   -10.0297  172.6707  -0.0581  0.9537
+## AI_nspray2TEBU_2:cons_group    35.6920  139.6539   0.2556  0.7983
+##                                   ci.lb      ci.ub     
+## intrcpt                       3448.5800  4966.3401  ***
+## AI_nspray2CARB_2              -542.6315  2777.8501     
+## AI_nspray2PROP_2             -1502.6632  1141.8667     
+## AI_nspray2TEBU_1              -511.9142  2163.2875     
+## AI_nspray2TEBU_2              -385.3350  1953.1246     
+## cons_group                    -457.0055  -101.1236   **
+## AI_nspray2CARB_2:cons_group   -759.9894   292.2935     
+## AI_nspray2PROP_2:cons_group   -195.8831   393.9069     
+## AI_nspray2TEBU_1:cons_group   -348.4580   328.3986     
+## AI_nspray2TEBU_2:cons_group   -238.0246   309.4086     
+## 
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</code></pre>
+<pre class="r"><code>results_I&lt;- data.frame(cbind((exp(fhb_mv_AI$b)-1)*100, 
+                             (exp(fhb_mv_AI$ci.lb)-1)*100,
+                             (exp(fhb_mv_AI$ci.ub)-1)*100))
+results_I</code></pre>
+<div data-pagedtable="false">
+<script data-pagedtable-source type="application/json">
+{"columns":[{"label":["X1"],"name":[1],"type":["dbl"],"align":["right"]},{"label":["X2"],"name":[2],"type":["dbl"],"align":["right"]},{"label":["X3"],"name":[3],"type":["dbl"],"align":["right"]}],"data":[{"1":"279925.38239","2":"2.350606e+05","3":"333349.65920"},{"1":"12.77164","2":"9.308158e+00","3":"16.34486"},{"1":"15.97217","2":"1.211592e+01","3":"19.96106"},{"1":"17.33967","2":"1.246772e+01","3":"22.42267"},{"1":"19.22402","2":"1.415570e+01","3":"24.51736"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
+  </script>
+</div>
+<pre class="r"><code>#anova(fhb_mv_AI_cons, btt=14:26) </code></pre>
+</div>
+</div>
+</div>
+
+
+
+</div>
+</div>
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>
