@@ -10,6 +10,9 @@ output:
      smooth_scroll: false
 ---
 
+```{r, include=FALSE}
+Sys.setlocale("LC_ALL", 'pt_BR.UTF-8')
+```
 
 
 Franklin Jackson Machado, Flávio Martins Santana, Douglas Lau and Emerson Medeiros Del Ponte  
