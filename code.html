@@ -773,7 +773,7 @@ fhb_mv_AI_D &lt;- rma.mv(yield, vi2,
 ## Multivariate Meta-Analysis Model (k = 188; method: ML)
 ## 
 ##     logLik    Deviance         AIC         BIC        AICc  
-## -1363.9516    564.5622   2767.9032   2832.6320   2772.9331  
+## -1363.9449    564.5490   2767.8899   2832.6187   2772.9198  
 ## 
 ## Variance Components: 
 ## 
@@ -784,18 +784,18 @@ fhb_mv_AI_D &lt;- rma.mv(yield, vi2,
 ## inner factor: AI_nspray2 (nlvls = 5)
 ## 
 ##                   estim       sqrt  k.lvl  fixed      level
-## tau^2.1    1172821.1556  1082.9687     48     no  AACHECK_0
-## tau^2.2    1649776.5517  1284.4363     41     no     CARB_2
-## tau^2.3    1513922.4058  1230.4155     27     no     PROP_2
-## tau^2.4    1298155.3558  1139.3662     38     no     TEBU_1
-## tau^2.5    1377800.2849  1173.7974     34     no     TEBU_2
+## tau^2.1    1171364.9734  1082.2962     48     no  AACHECK_0
+## tau^2.2    1647298.3472  1283.4712     41     no     CARB_2
+## tau^2.3    1511856.9324  1229.5759     27     no     PROP_2
+## tau^2.4    1294773.4714  1137.8811     38     no     TEBU_1
+## tau^2.5    1376265.3280  1173.1434     34     no     TEBU_2
 ## 
 ##            rho.AACH  rho.CARB  rho.PROP  rho.TEBU_1  rho.TEBU_2    AACH
-## AACHECK_0         1    0.9595    0.9533      0.9404      0.9168       -
-## CARB_2       0.9595         1    0.9984      0.9975      0.9919      33
-## PROP_2       0.9533    0.9984         1      0.0000      0.9938      26
-## TEBU_1       0.9404    0.9975    0.0000           1      0.9971      22
-## TEBU_2       0.9168    0.9919    0.9938      0.9971           1      25
+## AACHECK_0         1    0.9594    0.9535      0.9402      0.9166       -
+## CARB_2       0.9594         1    0.9984      0.9974      0.9918      33
+## PROP_2       0.9535    0.9984         1      0.0000      0.9938      26
+## TEBU_1       0.9402    0.9974    0.0000           1      0.9971      22
+## TEBU_2       0.9166    0.9918    0.9938      0.9971           1      25
 ##            CARB  PROP  TEBU_1  TEBU_2
 ## AACHECK_0    no    no      no      no
 ## CARB_2        -    no      no      no
@@ -807,22 +807,22 @@ fhb_mv_AI_D &lt;- rma.mv(yield, vi2,
 ## QE(df = 183) = 42895.4678, p-val &lt; .0001
 ## 
 ## Test of Moderators (coefficient(s) 2,3,4,5): 
-## QM(df = 4) = 63.1327, p-val &lt; .0001
+## QM(df = 4) = 63.1943, p-val &lt; .0001
 ## 
 ## Model Results:
 ## 
 ##                    estimate        se     zval    pval      ci.lb
-## intrcpt           3140.0622  157.6673  19.9158  &lt;.0001  2831.0400
-## AI_nspray2CARB_2   455.7985   64.5791   7.0580  &lt;.0001   329.2257
-## AI_nspray2PROP_2   497.2890   64.7478   7.6804  &lt;.0001   370.3856
-## AI_nspray2TEBU_1   456.6366   69.1584   6.6028  &lt;.0001   321.0886
-## AI_nspray2TEBU_2   558.3048   76.4817   7.2998  &lt;.0001   408.4034
+## intrcpt           3140.1149  157.5710  19.9283  &lt;.0001  2831.2815
+## AI_nspray2CARB_2   455.7581   64.5765   7.0576  &lt;.0001   329.1905
+## AI_nspray2PROP_2   496.8794   64.6113   7.6903  &lt;.0001   370.2435
+## AI_nspray2TEBU_1   456.5100   69.1458   6.6021  &lt;.0001   320.9868
+## AI_nspray2TEBU_2   558.4179   76.5168   7.2980  &lt;.0001   408.4477
 ##                       ci.ub     
-## intrcpt           3449.0843  ***
-## AI_nspray2CARB_2   582.3713  ***
-## AI_nspray2PROP_2   624.1924  ***
-## AI_nspray2TEBU_1   592.1845  ***
-## AI_nspray2TEBU_2   708.2062  ***
+## intrcpt           3448.9483  ***
+## AI_nspray2CARB_2   582.3257  ***
+## AI_nspray2PROP_2   623.5153  ***
+## AI_nspray2TEBU_1   592.0332  ***
+## AI_nspray2TEBU_2   708.3882  ***
 ## 
 ## ---
 ## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</code></pre>
@@ -841,10 +841,10 @@ anova(fhb_mv_AI_D, L=rbind(c(0,1,-1,0,0),
 ## 
 ## Results:
 ##    estimate      se    zval   pval
-## 1: -41.4905 34.4974 -1.2027 0.2291
-## 2:  40.6524 53.9755  0.7532 0.4514
-## 3: -61.0158 41.7599 -1.4611 0.1440
-## 4: 101.6683 48.2911  2.1053 0.0353</code></pre>
+## 1: -41.1213 34.3836 -1.1960 0.2317
+## 2:  40.3694 53.8679  0.7494 0.4536
+## 3: -61.5386 41.7331 -1.4746 0.1403
+## 4: 101.9079 48.2005  2.1143 0.0345</code></pre>
 <div id="inconsistency" class="section level4">
 <h4>Inconsistency</h4>
 <pre class="r"><code>### Groups were inclued directly in the spreadsheet
