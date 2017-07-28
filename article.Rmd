@@ -24,7 +24,7 @@ Corresponding author: E. M. Del Ponte; E-mail: delponte@ufv.br
 Article published in Phytopathology   
 
 ```{r echo=FALSE, message=FALSE, warning=FALSE}
-library(rcrossref)
+library(rcrossref) 
 citation <- cr_cn(dois = "10.1094/PDIS-03-17-0340-RE", format = "text", style = "apa")
 ```
 
