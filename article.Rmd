@@ -293,4 +293,3 @@ Willyerd, K. T., Li, C., Madden, L. V., Bradley, C. A., Bergstrom, G. C., Sweets
 Zhang, L., Jia, X., Chen, C., and Zhou, M. 2013. Characterization of carbendazim sensitivity and trichothecene chemotypes of Fusarium graminearum in Jiangsu Province of China. Physiol. Mol. Plant Pathol. 84:53–60. 
 
 Zhang, Y. J., Fan, P. S., Zhang, X., Chen, C. J., and Zhou, M. G. 2009. Quantification of Fusarium graminearum in harvested grain by real-time polymerase chain reaction to assess efficacies of fungicides on Fusarium head blight, deoxynivalenol contamination, and yield of winter wheat. Phytopathology 99:95-100.
-
