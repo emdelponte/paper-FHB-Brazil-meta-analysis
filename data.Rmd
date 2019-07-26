@@ -24,7 +24,7 @@ library(tidyverse)
 
 The data, only those for the selected treatments used in this study, are stored in two `csv` files, one for FHB index and the other for yield.  Although FHB index and yield were usually measured in the same plot for the treatment, there were missing records for one or another variables, and some trials reported only disease or yield data. For convenience, these were separated. 
 
-The data is in the tidy (long) format where each row represents a treatment (only treatment means were available in the articles), nested within a trial. Each study (publication) may contain more than one trial. 
+The data is in the tidy (long) format where each row represents a treatment (only treatment means were available in the articles), nested within a trial. Each study (publication) may contain more than one TRIAL.
 
 ## {.tabset}
 ### FHB index dataset 
